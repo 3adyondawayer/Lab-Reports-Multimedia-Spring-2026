@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECE359 · Lab 3 Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════ ROOT / RESET */
+:root {
+  --primary-dark:   #1e293b;
+  --primary-light:  #f8fafc;
+  --accent-blue:    #3b82f6;
+  --accent-teal:    #0d9488;
+  --accent-purple:  #7c3aed;
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #64748b;
+  --border-light:   #e2e8f0;
+  --border-medium:  #cbd5e1;
+  --surface-white:  #ffffff;
+  --surface-gray:   #f1f5f9;
+  --surface-blue:   #eff6ff;
+  --success-bg:     #ecfdf5;
+  --success-border: #10b981;
+  --success-text:   #065f46;
+  --warning-bg:     #fef3c7;
+  --warning-border: #f59e0b;
+  --warning-text:   #92400e;
+  --code-bg:        #1e293b;
+  --code-text:      #e2e8f0;
+  --shadow-sm:      0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md:      0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg:      0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--primary-light);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image: 
+    linear-gradient(rgba(59,130,246,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ═══════════════════════════════════════════ HEADER */
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  position: relative;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #334155 100%);
+  overflow: hidden;
+}
+
+.cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(59,130,246,0.1) 0%, transparent 70%);
+}
+
+.cover-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.3);
+  color: rgba(59,130,246,0.9);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.8s ease both;
+}
+
+.cover h1 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.1;
+  color: var(--primary-light);
+  margin-bottom: 1rem;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.cover h1 .subtitle {
+  display: block;
+  font-size: 0.4em;
+  font-weight: 500;
+  color: var(--accent-blue);
+  margin-top: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.cover-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+  animation: fadeUp 0.8s 0.25s ease both;
+}
+
+.cover-meta-item {
+  text-align: left;
+  padding: 1.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.cover-meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(59,130,246,0.7);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.cover-meta-value {
+  color: var(--primary-light);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: bounce 2s infinite;
+}
+
+.scroll-indicator span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(59,130,246,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.scroll-indicator::after {
+  content: '↓';
+  color: var(--accent-blue);
+  font-size: 1.2rem;
+}
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+/* ═══════════════════════════════════════════ PROGRESS BAR */
+.progress-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface-white);
+  border-bottom: 1px solid var(--border-light);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-gray);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.task-indicators {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-medium);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.task-indicator.completed {
+  background: var(--accent-teal);
+  transform: scale(1.2);
+}
+
+/* ═══════════════════════════════════════════ MAIN CONTAINER */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+
+/* ═══════════════════════════════════════════ SECTION DIVIDER */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 4rem 0 2.5rem;
+}
+
+.section-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}
+
+.section-divider-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 1rem;
+  background: var(--primary-light);
+}
+
+/* ═══════════════════════════════════════════ TASK CARDS */
+.task-card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.task-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-medium);
+}
+
+.task-card.active {
+  border-color: var(--accent-blue);
+  box-shadow: var(--shadow-lg);
+}
+
+.task-card.completed {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.task-header:hover {
+  background: var(--surface-gray);
+}
+
+.task-number {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid var(--border-medium);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.task-number .check-icon {
+  position: absolute;
+  opacity: 0;
+  color: white;
+  font-size: 1.1rem;
+  transition: opacity 0.2s ease;
+}
+
+.completed .task-number {
+  background: var(--success-border);
+  border-color: var(--success-border);
+  color: white;
+}
+
+.completed .task-number .number {
+  opacity: 0;
+}
+
+.completed .task-number .check-icon {
+  opacity: 1;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-category {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.task-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.task-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.difficulty-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.difficulty-easy {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+.difficulty-medium {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid rgba(245,158,11,0.2);
+}
+
+.difficulty-hard {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.completion-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--success-text);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.completed .completion-badge {
+  opacity: 1;
+}
+
+.expand-icon {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+.active .expand-icon {
+  transform: rotate(180deg);
+}
+
+/* ═══════════════════════════════════════════ TASK BODY */
+.task-body {
+  display: none;
+  border-top: 1px solid var(--border-light);
+  background: var(--surface-blue);
+}
+
+.task-body.open {
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.task-content {
+  padding: 2rem;
+}
+
+.objective {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(59,130,246,0.05);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 0 6px 6px 0;
+}
+
+/* ═══════════════════════════════════════════ CODE BLOCKS */
+.code-block {
+  background: var(--code-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-md);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #334155;
+}
+
+.code-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.code-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.code-dot.red { background: #ef4444; }
+.code-dot.yellow { background: #eab308; }
+.code-dot.green { background: #22c55e; }
+
+.code-filename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--code-text);
+  margin-left: 0.5rem;
+}
+
+.copy-button {
+  background: none;
+  border: 1px solid #475569;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.copy-button:hover {
+  border-color: #64748b;
+  color: var(--code-text);
+}
+
+.copy-button.copied {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+}
+
+.code-content {
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--code-text);
+  overflow-x: auto;
+}
+
+/* Syntax highlighting */
+.keyword { color: #f472b6; }
+.function { color: #60a5fa; }
+.string { color: #34d399; }
+.comment { color: #6b7280; font-style: italic; }
+.number { color: #fbbf24; }
+.operator { color: #a78bfa; }
+.variable { color: #e2e8f0; }
+
+/* ═══════════════════════════════════════════ HINT SYSTEM */
+.hints-section {
+  margin: 2rem 0;
+}
+
+.hints-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.hint-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-white);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hint-button:hover {
+  background: var(--surface-blue);
+}
+
+.hint-button.revealed {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.hint-content {
+  display: none;
+  background: rgba(59,130,246,0.05);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-left: 4px solid var(--accent-blue);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  animation: fadeIn 0.3s ease;
+}
+
+.hint-content.open {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════ CONCEPT BOXES */
+.concept-box {
+  background: rgba(124,58,237,0.05);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.concept-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent-purple);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  background: rgba(124,58,237,0.1);
+  color: var(--accent-purple);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════════ COMPLETE BUTTON */
+.complete-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent-blue);
+  border: none;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 2rem;
+  transition: all 0.2s ease;
+}
+
+.complete-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.completed .complete-button {
+  background: var(--success-border);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════ SUMMARY GRID */
+.summary-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.summary-card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.summary-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-blue);
+}
+
+.summary-card.completed-card {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.summary-number {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.completed-card .summary-number {
+  color: var(--success-border);
+}
+
+.summary-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+}
+
+/* ═══════════════════════════════════════════ COMPLETION SECTION */
+.completion-section {
+  display: none;
+  text-align: center;
+  margin: 4rem 0;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, var(--primary-dark), #334155);
+  border-radius: 16px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.completion-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59,130,246,0.2), transparent);
+}
+
+.completion-content {
+  position: relative;
+  z-index: 2;
+}
+
+.completion-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(59,130,246,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.completion-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.completion-subtitle {
+  font-size: 1rem;
+  color: var(--accent-blue);
+  margin-bottom: 1.5rem;
+}
+
+.completion-description {
+  font-size: 0.95rem;
+  color: rgba(248,250,252,0.7);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════ FOOTER */
+footer {
+  background: var(--primary-dark);
+  color: rgba(248,250,252,0.6);
+  text-align: center;
+  padding: 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════ RESPONSIVE */
+@media (max-width: 768px) {
+  .cover-meta {
+    grid-template-columns: 1fr;
+  }
+  
+  .progress-header {
+    padding: 0.75rem 1rem;
+    gap: 1rem;
+  }
+  
+  .container {
+    padding: 2rem 1rem 3rem;
+  }
+  
+  .task-header {
+    padding: 1rem;
+  }
+  
+  .task-content {
+    padding: 1.5rem;
+  }
+  
+  .summary-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ COVER PAGE -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-badge">
+      <span>●</span>
+      ECE 359 · Spring 2026
+    </div>
+    <h1>
+      Lab 3
+      <span class="subtitle">Frequency Domain Processing</span>
+    </h1>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Course</div>
+        <div class="cover-meta-value">Digital Signal Processing<br>for Multimedia</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Focus Areas</div>
+        <div class="cover-meta-value">FFT · Filtering · Convolution<br>Spectral Analysis</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Experiments</div>
+        <div class="cover-meta-value">8 Comprehensive<br>Tasks</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Start Lab</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ PROGRESS HEADER -->
+<div class="progress-header">
+  <span class="progress-label">Lab Progress</span>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="task-indicators" id="taskIndicators"></div>
+  <span class="progress-label" id="progressText">0/8</span>
+</div>
+
+<!-- ══════════════════════════════════ MAIN CONTENT -->
+<div class="container">
+  
+  <!-- Task Overview -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-text">Task Overview</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="summary-overview" id="summaryOverview">
+    <!-- Populated by JavaScript -->
+  </div>
+
+  <p style="text-align: center; color: var(--text-secondary); font-style: italic; margin: 2rem 0;">
+    Click any task card to expand and begin working. Mark tasks complete as you finish them to track your progress.
+  </p>
+
+  <!-- Part I: Fourier Transform Fundamentals -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-text">Part I — Fourier Transform Fundamentals</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- Task 1 -->
+  <div class="task-card" id="task1">
+    <div class="task-header" onclick="toggleTask(1)">
+      <div class="task-number">
+        <span class="number">1</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">FFT Basics</div>
+        <div class="task-title">Compute and Visualize 2D FFT</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-easy">Easy</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body1">
+      <div class="task-content">
+        <div class="objective">
+          Compute the 2D Fast Fourier Transform of an image and visualize both the magnitude and phase spectra. Learn how to properly display the frequency domain representation using logarithmic scaling and fftshift for centered visualization.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Key Concepts</div>
+          <p>The 2D FFT decomposes an image into its frequency components. Low frequencies (near DC) represent smooth variations, while high frequencies represent edges and fine details.</p>
+          <div class="formula">F(u,v) = ∑∑ f(x,y) · e^(-j2π(ux/M + vy/N))</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-title">
+              <div class="code-dots">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+              </div>
+              <span class="code-filename">task1_fft2d.m</span>
+            </div>
+            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-content">
+<span class="comment">% Task 1: 2D FFT Analysis</span>
+<span class="keyword">clear</span>; <span class="keyword">clc</span>; <span class="keyword">close all</span>;
+
+<span class="comment">% Load and prepare image</span>
+<span class="variable">I</span> = <span class="function">imread</span>(<span class="string">'cameraman.tif'</span>);
+<span class="variable">I</span> = <span class="function">im2double</span>(<span class="variable">I</span>);
+
+<span class="comment">% Compute 2D FFT</span>
+<span class="variable">F</span> = <span class="function">fft2</span>(<span class="variable">I</span>);
+<span class="variable">F_shifted</span> = <span class="function">fftshift</span>(<span class="variable">F</span>);
+
+<span class="comment">% Extract magnitude and phase</span>
+<span class="variable">magnitude</span> = <span class="function">abs</span>(<span class="variable">F_shifted</span>);
+<span class="variable">phase</span> = <span class="function">angle</span>(<span class="variable">F_shifted</span>);
+
+<span class="comment">% Display results</span>
+<span class="function">figure</span>(<span class="string">'Name'</span>, <span class="string">'2D FFT Analysis'</span>);
+<span class="function">subplot</span>(<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>); <span class="function">imshow</span>(<span class="variable">I</span>); <span class="function">title</span>(<span class="string">'Original Image'</span>);
+<span class="function">subplot</span>(<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>); <span class="function">imshow</span>(<span class="function">log</span>(<span class="number">1</span> + <span class="variable">magnitude</span>), []); <span class="function">title</span>(<span class="string">'Magnitude Spectrum'</span>);
+<span class="function">subplot</span>(<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>); <span class="function">imshow</span>(<span class="variable">phase</span>, []); <span class="function">title</span>(<span class="string">'Phase Spectrum'</span>);
+          </div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint1a')">
+              💡 Why use fftshift?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint1b')">
+              💡 Why log(1 + magnitude)?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint1c')">
+              💡 What does the phase represent?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint1a">
+            <strong>fftshift centers the frequency spectrum:</strong> By default, fft2 places the DC component (zero frequency) at the top-left corner. fftshift moves it to the center, making the spectrum easier to interpret visually. Low frequencies are in the center, high frequencies at the edges.
+          </div>
+          
+          <div class="hint-content" id="hint1b">
+            <strong>Logarithmic scaling for visualization:</strong> The magnitude spectrum has an enormous dynamic range - the DC component can be thousands of times larger than high-frequency components. log(1 + magnitude) compresses this range so you can see both large and small values. The +1 prevents log(0) = -∞.
+          </div>
+          
+          <div class="hint-content" id="hint1c">
+            <strong>Phase contains spatial information:</strong> While magnitude tells you "how much" of each frequency is present, phase tells you "where" those frequencies are located in the image. Phase is crucial for reconstruction - you can't recover the original image from magnitude alone.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(1)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task 2 -->
+  <div class="task-card" id="task2">
+    <div class="task-header" onclick="toggleTask(2)">
+      <div class="task-number">
+        <span class="number">2</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">Frequency Filtering</div>
+        <div class="task-title">Design and Apply Ideal Low-Pass Filter</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-easy">Easy</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body2">
+      <div class="task-content">
+        <div class="objective">
+          Create an ideal low-pass filter in the frequency domain and apply it to an image. Compare the results with different cutoff frequencies and observe the trade-off between noise reduction and detail preservation.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Ideal Low-Pass Filter</div>
+          <p>An ideal low-pass filter has a sharp cutoff - it passes all frequencies below the cutoff frequency D₀ and completely blocks all frequencies above it.</p>
+          <div class="formula">H(u,v) = 1 if D(u,v) ≤ D₀, else 0</div>
+          <div class="formula">D(u,v) = √[(u-M/2)² + (v-N/2)²]</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint2a')">
+              💡 How to create the distance matrix?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint2b')">
+              💡 Why does ideal filtering cause ringing?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint2c')">
+              💡 What's the effect of different D₀ values?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint2a">
+            <strong>Creating the distance matrix:</strong> Use meshgrid to create coordinate matrices, then compute the Euclidean distance from each point to the center. Remember to account for the shifted coordinates after fftshift.
+          </div>
+          
+          <div class="hint-content" id="hint2b">
+            <strong>Ringing artifacts:</strong> The sharp cutoff of an ideal filter corresponds to a sinc function in the spatial domain. This causes ringing (oscillations) around edges in the filtered image. This is why Gaussian or Butterworth filters are often preferred.
+          </div>
+          
+          <div class="hint-content" id="hint2c">
+            <strong>Cutoff frequency effects:</strong> Small D₀ → heavy blurring, strong noise reduction. Large D₀ → minimal blurring, less noise reduction. The optimal value depends on your specific application and noise characteristics.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(2)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task 3 -->
+  <div class="task-card" id="task3">
+    <div class="task-header" onclick="toggleTask(3)">
+      <div class="task-number">
+        <span class="number">3</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">Frequency Filtering</div>
+        <div class="task-title">Butterworth vs Gaussian Low-Pass Filters</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-medium">Medium</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body3">
+      <div class="task-content">
+        <div class="objective">
+          Implement and compare Butterworth and Gaussian low-pass filters. Analyze how the smooth transitions of these filters reduce ringing artifacts compared to ideal filters while maintaining effective noise reduction.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Smooth Filter Transitions</div>
+          <p>Unlike ideal filters, Butterworth and Gaussian filters have gradual transitions that reduce ringing artifacts.</p>
+          <div class="formula">H_Butterworth(u,v) = 1 / [1 + (D(u,v)/D₀)^(2n)]</div>
+          <div class="formula">H_Gaussian(u,v) = e^(-D²(u,v)/(2D₀²))</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint3a')">
+              💡 What does the order 'n' control in Butterworth?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint3b')">
+              💡 How to choose between Butterworth and Gaussian?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint3c')">
+              💡 How to measure filter performance?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint3a">
+            <strong>Butterworth filter order:</strong> Higher order n makes the filter transition sharper, approaching the ideal filter as n→∞. n=1 gives a very gradual transition, n=2 is commonly used as a good compromise, n=10 is quite sharp but still smoother than ideal.
+          </div>
+          
+          <div class="hint-content" id="hint3b">
+            <strong>Filter selection criteria:</strong> Gaussian filters have the smoothest transition and minimal ringing, making them good for general-purpose smoothing. Butterworth filters offer more control over the transition sharpness through the order parameter, useful when you need specific frequency response characteristics.
+          </div>
+          
+          <div class="hint-content" id="hint3c">
+            <strong>Performance metrics:</strong> Compare filters using: 1) Visual inspection for ringing artifacts, 2) Edge preservation (measure edge sharpness), 3) Noise reduction (compute SNR or standard deviation), 4) Frequency response plots to see the actual cutoff characteristics.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(3)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task 4 -->
+  <div class="task-card" id="task4">
+    <div class="task-header" onclick="toggleTask(4)">
+      <div class="task-number">
+        <span class="number">4</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">High-Pass Filtering</div>
+        <div class="task-title">Edge Enhancement with High-Pass Filters</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-medium">Medium</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body4">
+      <div class="task-content">
+        <div class="objective">
+          Design high-pass filters to enhance edges and fine details in images. Implement ideal, Butterworth, and Gaussian high-pass filters and compare their effects on edge enhancement and noise amplification.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">High-Pass Filter Design</div>
+          <p>High-pass filters are the complement of low-pass filters - they enhance high frequencies (edges, details) while attenuating low frequencies (smooth regions).</p>
+          <div class="formula">H_HP(u,v) = 1 - H_LP(u,v)</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint4a')">
+              💡 Why do high-pass filtered images look dark?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint4b')">
+              💡 How to improve high-pass filter results?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint4c')">
+              💡 What's high-frequency emphasis?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint4a">
+            <strong>DC component removal:</strong> High-pass filters remove or greatly attenuate the DC component (average brightness), making the image appear dark. The DC component represents the overall illumination level of the image.
+          </div>
+          
+          <div class="hint-content" id="hint4b">
+            <strong>Improving visibility:</strong> Add a constant to shift the result to a visible range, or use high-frequency emphasis: H(u,v) = a + b·H_HP(u,v) where a≥0 preserves some low frequencies and b>0 controls the emphasis strength.
+          </div>
+          
+          <div class="hint-content" id="hint4c">
+            <strong>High-frequency emphasis:</strong> This technique combines the original image with its high-pass filtered version, preserving the overall appearance while enhancing edges. It's more practical than pure high-pass filtering for most applications.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(4)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Part II: Advanced Frequency Domain Techniques -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-text">Part II — Advanced Frequency Domain Techniques</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <!-- Task 5 -->
+  <div class="task-card" id="task5">
+    <div class="task-header" onclick="toggleTask(5)">
+      <div class="task-number">
+        <span class="number">5</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">Selective Filtering</div>
+        <div class="task-title">Notch Filters for Periodic Noise Removal</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-hard">Hard</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body5">
+      <div class="task-content">
+        <div class="objective">
+          Design and apply notch filters to remove specific periodic noise patterns from images. Learn to identify noise frequencies in the spectrum and create targeted filters that preserve image content while eliminating interference.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Notch Filter Theory</div>
+          <p>Notch filters selectively attenuate specific frequencies while leaving others unchanged. They're ideal for removing periodic noise that appears as distinct peaks in the frequency spectrum.</p>
+          <div class="formula">H(u,v) = ∏[1 - e^(-D₁²(u,v)/(2D₀²))] · [1 - e^(-D₂²(u,v)/(2D₀²))]</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint5a')">
+              💡 How to identify noise frequencies?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint5b')">
+              💡 Why filter symmetric frequency pairs?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint5c')">
+              💡 How to choose notch filter width?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint5a">
+            <strong>Identifying noise frequencies:</strong> Display the magnitude spectrum and look for bright spots away from the center. Periodic noise creates distinct peaks at specific frequencies. Use interactive tools or manual inspection to locate these peaks precisely.
+          </div>
+          
+          <div class="hint-content" id="hint5b">
+            <strong>Symmetric filtering:</strong> For real-valued images, the frequency spectrum has conjugate symmetry. Noise frequencies appear in symmetric pairs about the center. You must filter both locations to completely remove the noise pattern.
+          </div>
+          
+          <div class="hint-content" id="hint5c">
+            <strong>Filter width selection:</strong> Narrow notches preserve more image detail but may not completely remove noise. Wide notches remove noise more effectively but may also remove legitimate image frequencies. Start narrow and increase width if needed.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(5)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task 6 -->
+  <div class="task-card" id="task6">
+    <div class="task-header" onclick="toggleTask(6)">
+      <div class="task-number">
+        <span class="number">6</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">Motion Blur</div>
+        <div class="task-title">Motion Blur Modeling and Restoration</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-hard">Hard</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body6">
+      <div class="task-content">
+        <div class="objective">
+          Model motion blur as a convolution with a motion kernel, then attempt restoration using inverse filtering. Understand the challenges of inverse filtering and why regularization techniques are necessary in practice.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Motion Blur Model</div>
+          <p>Motion blur occurs when there's relative motion between the camera and scene during exposure. It can be modeled as convolution with a motion kernel.</p>
+          <div class="formula">g(x,y) = f(x,y) ⊗ h(x,y) + n(x,y)</div>
+          <div class="formula">G(u,v) = F(u,v) · H(u,v) + N(u,v)</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint6a')">
+              💡 How to create a motion blur kernel?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint6b')">
+              💡 Why does inverse filtering fail?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint6c')">
+              💡 What is the Wiener filter approach?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint6a">
+            <strong>Motion kernel creation:</strong> For linear motion, create a line of ones along the motion direction with appropriate length and angle. Use functions like fspecial('motion', len, theta) or create manually using line drawing algorithms.
+          </div>
+          
+          <div class="hint-content" id="hint6b">
+            <strong>Inverse filtering problems:</strong> Direct division F̂(u,v) = G(u,v)/H(u,v) fails when H(u,v) is small or zero, causing noise amplification. Even small amounts of noise become severely amplified in the restoration process.
+          </div>
+          
+          <div class="hint-content" id="hint6c">
+            <strong>Wiener filtering:</strong> The Wiener filter provides optimal restoration by balancing noise reduction and detail preservation: W(u,v) = H*(u,v)/[|H(u,v)|² + K], where K is related to the noise-to-signal power ratio.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(6)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task 7 -->
+  <div class="task-card" id="task7">
+    <div class="task-header" onclick="toggleTask(7)">
+      <div class="task-number">
+        <span class="number">7</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">Spectral Analysis</div>
+        <div class="task-title">Texture Analysis Using Power Spectrum</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-medium">Medium</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body7">
+      <div class="task-content">
+        <div class="objective">
+          Analyze different texture patterns using their power spectra. Learn how directional textures, periodic patterns, and random textures create characteristic signatures in the frequency domain that can be used for classification and analysis.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Power Spectrum Analysis</div>
+          <p>The power spectrum |F(u,v)|² reveals the energy distribution across frequencies, providing insights into texture characteristics and directional patterns.</p>
+          <div class="formula">P(u,v) = |F(u,v)|² = F(u,v) · F*(u,v)</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint7a')">
+              💡 What do directional textures look like in frequency?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint7b')">
+              💡 How to quantify texture directionality?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint7c')">
+              💡 What features can be extracted from power spectra?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint7a">
+            <strong>Directional texture signatures:</strong> Textures with strong directional patterns create energy concentrations perpendicular to the texture direction in the frequency domain. Horizontal textures show vertical energy bands, and vice versa.
+          </div>
+          
+          <div class="hint-content" id="hint7b">
+            <strong>Measuring directionality:</strong> Compute radial and angular profiles of the power spectrum. Calculate the variance of energy distribution across angles - high variance indicates strong directionality, low variance suggests isotropic (non-directional) texture.
+          </div>
+          
+          <div class="hint-content" id="hint7c">
+            <strong>Spectral texture features:</strong> Extract features like: 1) Energy distribution across frequency bands, 2) Peak locations and magnitudes, 3) Spectral centroid (center of mass), 4) Spectral spread (energy distribution width), 5) Directional energy ratios.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(7)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task 8 -->
+  <div class="task-card" id="task8">
+    <div class="task-header" onclick="toggleTask(8)">
+      <div class="task-number">
+        <span class="number">8</span>
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-info">
+        <div class="task-category">Integration</div>
+        <div class="task-title">Complete Frequency Domain Processing Pipeline</div>
+      </div>
+      <div class="task-badges">
+        <span class="difficulty-badge difficulty-hard">Hard</span>
+        <span class="completion-badge">Complete</span>
+        <span class="expand-icon">▼</span>
+      </div>
+    </div>
+    <div class="task-body" id="body8">
+      <div class="task-content">
+        <div class="objective">
+          Combine multiple frequency domain techniques into a comprehensive image processing pipeline. Apply noise removal, enhancement, and restoration techniques in sequence, analyzing the cumulative effects and optimizing the processing order.
+        </div>
+
+        <div class="concept-box">
+          <div class="concept-title">Pipeline Design Principles</div>
+          <p>The order of operations in frequency domain processing significantly affects the final result. Consider the interaction between different filters and the cumulative effect on image quality.</p>
+          <div class="formula">f_final = IFFT{H₃(u,v) · H₂(u,v) · H₁(u,v) · FFT{f_input}}</div>
+        </div>
+
+        <div class="hints-section">
+          <div class="hints-grid">
+            <button class="hint-button" onclick="toggleHint(this, 'hint8a')">
+              💡 What's the optimal processing order?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint8b')">
+              💡 How to combine multiple filters efficiently?
+            </button>
+            <button class="hint-button" onclick="toggleHint(this, 'hint8c')">
+              💡 How to evaluate pipeline performance?
+            </button>
+          </div>
+          
+          <div class="hint-content" id="hint8a">
+            <strong>Processing order considerations:</strong> Generally: 1) Remove periodic noise first (notch filters), 2) Apply restoration if needed (motion blur correction), 3) Enhance details (high-pass or high-frequency emphasis), 4) Final smoothing if necessary (low-pass). Each step should improve the conditions for the next.
+          </div>
+          
+          <div class="hint-content" id="hint8b">
+            <strong>Filter combination:</strong> Multiple filters can be combined by multiplying their transfer functions: H_combined = H₁ × H₂ × H₃. This is more efficient than applying filters sequentially, requiring only one FFT and one IFFT operation.
+          </div>
+          
+          <div class="hint-content" id="hint8c">
+            <strong>Performance evaluation:</strong> Use both objective metrics (PSNR, SSIM, MSE) and subjective assessment. Compare processing time, memory usage, and visual quality. Consider the specific requirements of your application when choosing the optimal pipeline configuration.
+          </div>
+        </div>
+
+        <button class="complete-button" onclick="markComplete(8)">
+          ✓ Mark Complete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion Section -->
+  <div class="completion-section" id="completionSection">
+    <div class="completion-content">
+      <div class="completion-badge">Lab Complete</div>
+      <div class="completion-title">8 / 8</div>
+      <div class="completion-subtitle">Tasks Completed</div>
+      <div class="completion-description">
+        Excellent work! You have mastered the fundamentals of frequency domain processing, including FFT analysis, various filtering techniques, noise removal, motion blur restoration, and spectral analysis. These skills form the foundation for advanced digital signal processing applications.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  ECE359 · Ain Shams University · Spring 2026 · Lab 3 Report — Frequency Domain Processing
+</footer>
+
+<script>
+// Lab state management
+const TOTAL_TASKS = 8;
+const completedTasks = new Set();
+
+const taskData = [
+  null, // 1-indexed
+  { label: "2D FFT", category: "FFT Basics" },
+  { label: "Ideal LPF", category: "Frequency Filtering" },
+  { label: "Smooth Filters", category: "Frequency Filtering" },
+  { label: "High-Pass", category: "High-Pass Filtering" },
+  { label: "Notch Filters", category: "Selective Filtering" },
+  { label: "Motion Blur", category: "Motion Blur" },
+  { label: "Texture Analysis", category: "Spectral Analysis" },
+  { label: "Full Pipeline", category: "Integration" }
+];
+
+// Initialize the lab
+document.addEventListener('DOMContentLoaded', function() {
+  initializeSummaryOverview();
+  initializeTaskIndicators();
+  updateProgress();
+});
+
+function initializeSummaryOverview() {
+  const container = document.getElementById('summaryOverview');
+  
+  for (let i = 1; i <= TOTAL_TASKS; i++) {
+    const card = document.createElement('div');
+    card.className = 'summary-card';
+    card.id = `summary${i}`;
+    card.onclick = () => scrollToTask(i);
+    
+    card.innerHTML = `
+      <div class="summary-number">${i.toString().padStart(2, '0')}</div>
+      <div class="summary-label">${taskData[i].label}</div>
+    `;
+    
+    container.appendChild(card);
+  }
+}
+
+function initializeTaskIndicators() {
+  const container = document.getElementById('taskIndicators');
+  
+  for (let i = 1; i <= TOTAL_TASKS; i++) {
+    const indicator = document.createElement('div');
+    indicator.className = 'task-indicator';
+    indicator.id = `indicator${i}`;
+    indicator.title = `Task ${i}: ${taskData[i].label}`;
+    indicator.onclick = () => scrollToTask(i);
+    
+    container.appendChild(indicator);
+  }
+}
+
+function toggleTask(taskNumber) {
+  const card = document.getElementById(`task${taskNumber}`);
+  const body = document.getElementById(`body${taskNumber}`);
+  
+  const isOpen = body.classList.contains('open');
+  
+  // Close all other tasks
+  for (let i = 1; i <= TOTAL_TASKS; i++) {
+    if (i !== taskNumber) {
+      document.getElementById(`task${i}`).classList.remove('active');
+      document.getElementById(`body${i}`).classList.remove('open');
+    }
+  }
+  
+  // Toggle current task
+  card.classList.toggle('active', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+function markComplete(taskNumber) {
+  if (completedTasks.has(taskNumber)) return;
+  
+  completedTasks.add(taskNumber);
+  
+  // Update UI elements
+  document.getElementById(`task${taskNumber}`).classList.add('completed');
+  document.getElementById(`indicator${taskNumber}`).classList.add('completed');
+  document.getElementById(`summary${taskNumber}`).classList.add('completed-card');
+  
+  updateProgress();
+  
+  // Auto-advance to next task
+  setTimeout(() => {
+    const nextTask = taskNumber + 1;
+    if (nextTask <= TOTAL_TASKS) {
+      scrollToTask(nextTask);
+      toggleTask(nextTask);
+    } else {
+      // Show completion section
+      document.getElementById('completionSection').style.display = 'block';
+      document.getElementById('completionSection').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  }, 1000);
+}
+
+function updateProgress() {
+  const completed = completedTasks.size;
+  const percentage = (completed / TOTAL_TASKS) * 100;
+  
+  document.getElementById('progressFill').style.width = `${percentage}%`;
+  document.getElementById('progressText').textContent = `${completed}/${TOTAL_TASKS}`;
+}
+
+function scrollToTask(taskNumber) {
+  document.getElementById(`task${taskNumber}`).scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
+function toggleHint(button, hintId) {
+  const hintContent = document.getElementById(hintId);
+  const isOpen = hintContent.classList.contains('open');
+  
+  hintContent.classList.toggle('open', !isOpen);
+  button.classList.toggle('revealed', !isOpen);
+  
+  // Update button text
+  if (!isOpen) {
+    button.innerHTML = button.innerHTML.replace('💡', '✓');
+  } else {
+    button.innerHTML = button.innerHTML.replace('✓', '💡');
+  }
+}
+
+function copyCode(button) {
+  const codeContent = button.closest('.code-block').querySelector('.code-content');
+  const text = codeContent.textContent;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    button.textContent = 'Copied!';
+    button.classList.add('copied');
+    
+    setTimeout(() => {
+      button.textContent = 'Copy';
+      button.classList.remove('copied');
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy code:', err);
+  });
+}
+</script>
+
+</body>
+</html>
